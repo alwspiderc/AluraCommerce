@@ -1,12 +1,30 @@
-import { useState , useContext } from "react";
-import { Text, View, TextInput, TouchableOpacity, StatusBar } from 'react-native';
-import { estilo } from './estilos';
+import { useState, useContext } from "react";
+import { Text, View, TextInput, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { AutenticacaoContext } from "../../contexts/AutenticacaoContext";
+import { TemaContext } from "../../contexts/TemaContext";
+import { estilos } from './estilos';
 
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
 
+  const { temaEscolhido } = useContext(TemaContext);
+  const estilo = estilos(temaEscolhido);
 
+  const { login } = useContext(AutenticacaoContext);
+
+  function logandoNoSistema() {
+    const resultado = login(email, senha)
+    
+    if(resultado == 'ok') {
+      navigation.navigate('Principal');
+      return;
+    }
+
+    Alert.alert(resultado)
+    
+  }
+  
   return (
     <View style={estilo.container}>
       <StatusBar />
@@ -28,12 +46,13 @@ export default function Login({ navigation }) {
           autoCapitalize="none"
           value={senha}
           onChangeText={setSenha}
+          secureTextEntry={true}
         />
       </View>
 
       <TouchableOpacity
         style={estilo.botao}
-        onPress={() => navigation.navigate('Principal')}
+        onPress={() => logandoNoSistema()}
       >
         <Text style={estilo.botaoTexto}>Entrar</Text>
       </TouchableOpacity>
