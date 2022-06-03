@@ -1,4 +1,5 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
+import { pegarProdutos, salvarProduto } from "../services/requisicoes/proodutos";
 
 export const ProdutosContext = createContext({});
 
@@ -7,15 +8,22 @@ export function ProdutosProvider({ children }) {
   const [carrinho, setCarrinho] = useState([]);
   const [ultimosVistos, setUltimosVistos] = useState([]);
 
-  function viuProduto(produto) {
+  useEffect(async () => {
+    const resultado = await pegarProdutos()
+    setCarrinho(resultado)
+    setQuantidade(resultado.length)
+  }, [])
+
+  async function viuProduto(produto) {
     setQuantidade(quantidade + 1);
 
+    const resultado = await salvarProduto(produto)
     let novoCarrinho = carrinho;
     novoCarrinho.push(produto);
     setCarrinho(novoCarrinho);
 
     let novoUltimosVistos = new Set(ultimosVistos);
-    novoUltimosVistos.add(produto);
+    novoUltimosVistos.add(resultado);
     setUltimosVistos([...novoUltimosVistos]);
   }
 
